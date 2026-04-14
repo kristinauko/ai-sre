@@ -63,30 +63,16 @@ cd frontend && npm install
 
 ## Running
 
-### Dev mode
+The server is provisioned to run inside a **tmux session** on the host machine as a temporary measure. This keeps the process alive across SSH disconnects and avoids exposing the service on a public port — a deliberate precaution given that the UI has no authentication layer.
 
-Two terminals, hot reload on both sides:
-
-```bash
-# Terminal 1 — backend
-OPENAI_API_KEY=sk-or-... make dev-backend
-
-# Terminal 2 — frontend
-make dev-frontend
-```
-
-Open **http://localhost:5173**
-
-### Production mode
-
-Single binary, single port:
+Start or reattach to the session and run:
 
 ```bash
-make build
-OPENAI_API_KEY=sk-or-... ./bin/ai-sre --config backend/config.yaml
+cd /root/ai-sre
+OPENAI_API_KEY=sk-<REDACTED> ./bin/ai-sre --config ./backend/config.yaml
 ```
 
-Open **http://localhost:8080**
+The Go server listens on localhost only. An **nginx reverse proxy** sits in front of it and terminates TLS, making the UI accessible externally at **https://\<VM-address\>:8080**.
 
 ---
 
@@ -119,6 +105,7 @@ OpenRouter gives access to many models on a pay-per-use basis with no subscripti
 
 ### UI
 
+- **No authentication** — the UI has no login layer; anyone who can reach the server can issue kubectl commands against the cluster. Production deployments should add OAuth 2.0 / OIDC (e.g. via an identity-aware proxy or a library such as Auth.js) before exposing the interface beyond localhost
 - **Loading / streaming state** — show a visible indicator while the model is generating or kubectl is running
 - **Prompt history** — recall and re-submit previous queries within the session
 - **Command preview** — display the proposed `kubectl` command before execution so the user can see what will run
