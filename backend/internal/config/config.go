@@ -17,7 +17,8 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Port int `yaml:"port"`
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
 }
 
 type KubernetesConfig struct {
@@ -64,8 +65,11 @@ func Load(path string) (*Config, error) {
 		cfg.Kubernetes.Kubeconfig = filepath.Join(home, cfg.Kubernetes.Kubeconfig[2:])
 	}
 
+	if cfg.Server.Host == "" {
+		cfg.Server.Host = "127.0.0.1"
+	}
 	if cfg.Server.Port == 0 {
-		cfg.Server.Port = 8080
+		cfg.Server.Port = 9090
 	}
 
 	return &cfg, nil

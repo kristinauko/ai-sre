@@ -57,7 +57,7 @@ func main() {
 		log.Println("no embedded UI found — run `make dev-frontend` on :5173")
 	}
 
-	addr := fmt.Sprintf(":%d", cfg.Server.Port)
+	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 	log.Printf("ai-sre listening on %s", addr)
 	if err := http.ListenAndServe(addr, h2c.NewHandler(mux, &http2.Server{})); err != nil {
 		log.Fatalf("server: %v", err)
