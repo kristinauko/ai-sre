@@ -23,6 +23,7 @@ type ServerConfig struct {
 type KubernetesConfig struct {
 	Kubeconfig string `yaml:"kubeconfig"`
 	Context    string `yaml:"context"`
+	Binary     string `yaml:"binary"`
 }
 
 type OpenAIConfig struct {

@@ -2,8 +2,9 @@ server:
   port: 8080
 
 kubernetes:
-  kubeconfig: ~/.kube/microk8s-config
+  kubeconfig: ~/.kube/config
   context: ""     # empty = current-context in kubeconfig
+  binary: "microk8s kubectl"  # or "kubectl" if kubectl is on PATH
 
 openai:
   endpoint: https://openrouter.ai/api/v1
@@ -12,4 +13,4 @@ openai:
 
 
 prompts:
-  system_prompt_file: ./prompts/system.txt
+  system_prompt_file: ./backend/prompts/system.txt

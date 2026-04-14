@@ -13,12 +13,18 @@ import (
 type Executor struct {
 	kubeconfig string
 	context    string
+	binary     string
 }
 
 func NewExecutor(cfg config.KubernetesConfig) *Executor {
+	binary := cfg.Binary
+	if binary == "" {
+		binary = "kubectl"
+	}
 	return &Executor{
 		kubeconfig: cfg.Kubeconfig,
 		context:    cfg.Context,
+		binary:     binary,
 	}
 }
 
@@ -42,7 +48,10 @@ func (e *Executor) Run(ctx context.Context, command string) (output string, succ
 		args = append([]string{"--context", e.context}, args...)
 	}
 
-	out, err := exec.CommandContext(ctx, "kubectl", args...).CombinedOutput()
+	binaryParts := strings.Fields(e.binary)
+	cmd, leadingArgs := binaryParts[0], binaryParts[1:]
+	args = append(leadingArgs, args...)
+	out, err := exec.CommandContext(ctx, cmd, args...).CombinedOutput()
 	if err != nil && len(out) == 0 {
 		return fmt.Sprintf("kubectl exec error: %v", err), false
 	}
