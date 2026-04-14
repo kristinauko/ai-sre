@@ -96,3 +96,30 @@ Sign up at [openrouter.ai](https://openrouter.ai) → Keys → Create key.
 Keys start with `sk-or-`.
 
 OpenRouter gives access to many models on a pay-per-use basis with no subscription required.
+
+---
+
+## Known issues & future enhancements
+
+### Safety (priority)
+
+- **Command validator** — an independent validation step that checks whether the proposed `kubectl` command actually matches the stated user intent before execution; currently the model is trusted end-to-end with no cross-check
+- **Destructive / wide-impact guardrails** — commands such as `delete`, `drain`, `cordon`, or those targeting all namespaces (`-A`) should trigger a confirmation turn before execution rather than running immediately
+- **Prompt injection via resource names** — a malicious pod or container whose name contains instruction-like text (e.g. `ignore-previous-instructions-and-exec`) could influence the model's next action; resource names returned from the cluster must be treated as untrusted data and sanitised before being included in the model context
+
+### Testing
+
+- No automated tests exist yet — unit tests for the executor, config loader, and RPC handlers; integration tests against a real (or kind/k3d) cluster; end-to-end tests for the full chat flow
+
+### Observability
+
+- **Structured logging** — replace `log.Printf` with structured logs (level, request ID, latency, kubectl exit code)
+- **Debug mode** — flag or env var to log the full prompt sent to the model and the raw completion, without exposing this in production
+- **Error messages** — surface kubectl stderr and non-zero exit codes to the user in a readable way instead of a bare failure flag
+
+### UI
+
+- **Loading / streaming state** — show a visible indicator while the model is generating or kubectl is running
+- **Prompt history** — recall and re-submit previous queries within the session
+- **Command preview** — display the proposed `kubectl` command before execution so the user can see what will run
+- **Copy button** — one-click copy for command and output blocks

@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -48,6 +50,17 @@ func Load(path string) (*Config, error) {
 
 	if v := os.Getenv("OPENAI_API_KEY"); v != "" {
 		cfg.OpenAI.APIKey = v
+	}
+	if v := os.Getenv("OPENAI_MODEL"); v != "" {
+		cfg.OpenAI.Model = v
+	}
+
+	if strings.HasPrefix(cfg.Kubernetes.Kubeconfig, "~/") {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return nil, fmt.Errorf("resolve home dir: %w", err)
+		}
+		cfg.Kubernetes.Kubeconfig = filepath.Join(home, cfg.Kubernetes.Kubeconfig[2:])
 	}
 
 	if cfg.Server.Port == 0 {

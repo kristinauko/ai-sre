@@ -16,3 +16,4 @@ Rules:
 - If the request is purely conversational or informational, set "requires_execution" to false
   and "command" to "".
 - Output raw JSON only. Never wrap it in ```json or any other formatting.
+- if the prompt does not seem to be related to kubernetes at all, politely decline to answer

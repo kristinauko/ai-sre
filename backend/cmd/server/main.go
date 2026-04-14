@@ -37,6 +37,7 @@ func main() {
 		log.Fatalf("read system prompt %q: %v", cfg.Prompts.SystemPromptFile, err)
 	}
 
+	log.Printf("using model: %s (endpoint: %s)", cfg.OpenAI.Model, cfg.OpenAI.Endpoint)
 	llmClient := llm.NewClient(cfg.OpenAI, string(promptBytes))
 	kubectlExec := kubectl.NewExecutor(cfg.Kubernetes)
 	srv := server.New(llmClient, kubectlExec)
