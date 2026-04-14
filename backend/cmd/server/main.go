@@ -42,20 +42,20 @@ func main() {
 	kubectlExec := kubectl.NewExecutor(cfg.Kubernetes)
 	srv := server.New(llmClient, kubectlExec)
 
-	// Strip the "dist/" prefix so the embedded FS root == the web root.
-	staticFS, err := fs.Sub(ui.FS, "dist")
-	if err != nil {
-		log.Fatalf("embed sub: %v", err)
-	}
-
 	mux := http.NewServeMux()
 
 	// ConnectRPC handler — must be registered before the catch-all.
 	rpcPath, rpcHandler := srv.Handler()
 	mux.Handle(rpcPath, rpcHandler)
 
-	// Serve the React SPA for everything else.
-	mux.Handle("/", spaHandler(staticFS))
+	// Strip the "dist/" prefix so the embedded FS root == the web root.
+	// In dev mode (no prod build tag) the FS is empty; skip SPA serving and
+	// rely on the Vite dev server on :5173 instead.
+	if staticFS, err := fs.Sub(ui.FS, "dist"); err == nil {
+		mux.Handle("/", spaHandler(staticFS))
+	} else {
+		log.Println("no embedded UI found — run `make dev-frontend` on :5173")
+	}
 
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)
 	log.Printf("ai-sre listening on %s", addr)

@@ -1,6 +1,17 @@
 import { useState, useCallback } from 'react'
 import { client } from '../lib/client'
 
+function uuid(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  // Fallback for non-secure contexts (plain HTTP over non-localhost).
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16)
+  })
+}
+
 export type Message = {
   id: string
   role: 'user' | 'assistant'
@@ -17,17 +28,17 @@ export function useChat() {
   const [streaming, setStreaming] = useState(false)
 
   // Stable session ID for the lifetime of this page load.
-  const [sessionId] = useState(() => crypto.randomUUID())
+  const [sessionId] = useState(() => uuid())
 
   const sendMessage = useCallback(async (text: string) => {
     const userMsg: Message = {
-      id: crypto.randomUUID(),
+      id: uuid(),
       role: 'user',
       explanation: text,
       done: true,
     }
 
-    const assistantId = crypto.randomUUID()
+    const assistantId = uuid()
     const assistantMsg: Message = {
       id: assistantId,
       role: 'assistant',

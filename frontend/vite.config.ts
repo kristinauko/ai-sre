@@ -5,6 +5,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    host: '0.0.0.0',
+    open: false,
     proxy: {
       // Forward ConnectRPC calls to the Go backend during development.
       '/sre.v1.SREService': {

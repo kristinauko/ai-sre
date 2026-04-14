@@ -23,7 +23,7 @@ dev-backend:
 	cd backend && go run ./cmd/server
 
 dev-frontend:
-	cd frontend && npm run dev
+	cd frontend && BROWSER=none npm run dev
 
 # ---------------------------------------------------------------------------
 # Production build — single binary with embedded frontend
@@ -33,7 +33,7 @@ build:
 	rm -rf backend/internal/ui/dist
 	cp -r frontend/dist backend/internal/ui/dist
 	mkdir -p bin
-	cd backend && go build -o ../bin/ai-sre ./cmd/server
+	cd backend && go build -tags prod -o ../bin/ai-sre ./cmd/server
 
 # ---------------------------------------------------------------------------
 # Deploy — applies manifests against the cluster in backend/config.yaml
