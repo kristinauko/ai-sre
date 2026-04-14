@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+kubernetes:
+  kubeconfig: ~/.kube/microk8s-config
+  context: ""     # empty = current-context in kubeconfig
+
+openai:
+  endpoint: https://openrouter.ai/api/v1
+  api_key: ""     # set via OPENAI_API_KEY env var
+  model: openai/codex-mini-latest
+
+
+prompts:
+  system_prompt_file: ./prompts/system.txt

@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package sre.v1;
+
+option go_package = "github.com/yourname/ai-sre/backend/internal/gen/sre/v1;srev1";
+
+service SREService {
+  // Chat streams back explanation, the resolved command, live kubectl output,
+  // and a terminal Done chunk — in that order.
+  rpc Chat(ChatRequest) returns (stream ChatResponse);
+}
+
+message ChatRequest {
+  string message    = 1; // user's plain-English query
+  string session_id = 2; // UUID; reuse across turns for multi-turn memory
+}
+
+message ChatResponse {
+  oneof payload {
+    ExplanationChunk explanation = 1;
+    CommandChunk     command     = 2;
+    OutputChunk      output      = 3;
+    ErrorChunk       error       = 4;
+    DoneChunk        done        = 5;
+  }
+}
+
+// Text narrating what the assistant is about to do (or the full answer
+// when no kubectl execution is needed).
+message ExplanationChunk { string text = 1; }
+
+// The resolved kubectl command, streamed before execution so the UI can
+// display it in a code block immediately.
+message CommandChunk { string command = 1; }
+
+// Raw kubectl output. success reflects the process exit code.
+message OutputChunk {
+  string text    = 1;
+  bool   success = 2;
+}
+
+// Sent when the LLM call or kubectl execution fails.
+message ErrorChunk { string message = 1; }
+
+// Terminal chunk — signals the stream is complete.
+message DoneChunk {}

@@ -1,0 +1,9 @@
+# buf generated output (adjust if you commit generated code)
+gen/
+
+# buf build cache
+.buf/
+
+# OS
+.DS_Store
+Thumbs.db
