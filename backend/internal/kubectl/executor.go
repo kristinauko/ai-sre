@@ -43,5 +43,8 @@ func (e *Executor) Run(ctx context.Context, command string) (output string, succ
 	}
 
 	out, err := exec.CommandContext(ctx, "kubectl", args...).CombinedOutput()
+	if err != nil && len(out) == 0 {
+		return fmt.Sprintf("kubectl exec error: %v", err), false
+	}
 	return string(out), err == nil
 }
